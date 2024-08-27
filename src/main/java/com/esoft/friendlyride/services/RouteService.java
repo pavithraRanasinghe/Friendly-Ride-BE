@@ -6,6 +6,8 @@ import com.esoft.friendlyride.dto.response.DriverResponse;
 import com.esoft.friendlyride.dto.response.MultipleRouteSearchResponse;
 import com.esoft.friendlyride.dto.response.RouteSearchResponse;
 import com.esoft.friendlyride.dto.response.VehicleResponse;
+import com.esoft.friendlyride.exceptions.EntityNotFoundException;
+import com.esoft.friendlyride.exceptions.NotFoundException;
 import com.esoft.friendlyride.models.Driver;
 import com.esoft.friendlyride.models.Route;
 import com.esoft.friendlyride.repository.RouteRepository;
@@ -56,7 +58,7 @@ public class RouteService {
     }
 
     public List<MultipleRouteSearchResponse> findTrip(final SearchDriverRequest searchRequest){
-        final double distance = 5000;
+        final double distance = .2;
         List<Route> singleRideList = routeRepository.findDriversNearby(
                 searchRequest.getStartLongitude(),
                 searchRequest.getStartLatitude(),
@@ -78,8 +80,7 @@ public class RouteService {
         List<MultipleRouteSearchResponse> searchResult = new ArrayList<>();
         List<Route> startSearchList = routeRepository.findStartSearch(
                 searchRequest.getStartLongitude(),
-                searchRequest.getStartLatitude(), distance,
-                searchRequest.getStartTime());
+                searchRequest.getStartLatitude(), distance);
 
         startSearchList.forEach(startSearch -> {
             double midLongitude = startSearch.getEndLocation().getX();
@@ -90,8 +91,7 @@ public class RouteService {
                     midLatitude,
                     distance,
                     searchRequest.getEndLongitude(),
-                    searchRequest.getEndLatitude(),
-                    startSearch.getExpectedEndTime());
+                    searchRequest.getEndLatitude());
 
             endSearchList.forEach(endSearch->{
                 MultipleRouteSearchResponse result = MultipleRouteSearchResponse.builder()
@@ -107,6 +107,10 @@ public class RouteService {
         return searchResult;
     }
 
+    public Route findById(Long id){
+        return routeRepository.findById(id).orElseThrow(()->new EntityNotFoundException(id));
+    }
+
     private RouteSearchResponse convertRouteToResponse(final Route route){
         return RouteSearchResponse.builder()
                 .startTime(route.getStartTime())
@@ -118,13 +122,13 @@ public class RouteService {
                         .email(route.getDriver().getEmail())
                         .contact(route.getDriver().getContact())
                         .nic(route.getDriver().getNic())
-                        .vehicle(VehicleResponse.builder()
-                                .id(route.getDriver().getVehicle().getId())
-                                .name(route.getDriver().getVehicle().getName())
-                                .model(route.getDriver().getVehicle().getModel())
-                                .colour(route.getDriver().getVehicle().getColour())
-                                .plateNumber(route.getDriver().getVehicle().getPlateNumber())
-                                .build())
+//                        .vehicle(VehicleResponse.builder()
+//                                .id(route.getDriver().getVehicle().getId())
+//                                .name(route.getDriver().getVehicle().getName())
+//                                .model(route.getDriver().getVehicle().getModel())
+//                                .colour(route.getDriver().getVehicle().getColour())
+//                                .plateNumber(route.getDriver().getVehicle().getPlateNumber())
+//                                .build())
                         .build())
                 .build();
     }

@@ -50,4 +50,9 @@ public class RouteController {
                         .startTime(startTime)
                         .build());
     }
+
+    @GetMapping("/{id}")
+    public Route findById(@PathVariable Long id){
+        return routeService.findById(id);
+    }
 }

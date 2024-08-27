@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Type;
 import org.locationtech.jts.geom.Point;
 import org.n52.jackson.datatype.jts.GeometryDeserializer;
 import org.n52.jackson.datatype.jts.GeometrySerializer;
@@ -50,12 +51,12 @@ public class Route implements Serializable {
     @Column(name = "expected_end_time")
     private LocalTime expectedEndTime;
 
-    @Column(name = "start_location", columnDefinition = "geography(Point, 4326)")
+    @Column(name = "start_location")
     @JsonSerialize(using = GeometrySerializer.class)
     @JsonDeserialize(using = GeometryDeserializer.class)
     private Point startLocation;
 
-    @Column(name = "end_location", columnDefinition = "geography(Point, 4326)")
+    @Column(name = "end_location")
     @JsonSerialize(using = GeometrySerializer.class)
     @JsonDeserialize(using = GeometryDeserializer.class)
     private Point endLocation;
