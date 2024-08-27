@@ -1,12 +1,13 @@
-package com.esoft.friendlyride.dto.request;
+package com.esoft.friendlyride.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
+
 import java.io.Serializable;
 
 @Data
 @Builder
-public class DriverRequest implements Serializable {
+public class DriverResponse implements Serializable {
 
     private Long id;
     private String firstName;
@@ -14,5 +15,5 @@ public class DriverRequest implements Serializable {
     private String email;
     private String nic;
     private String contact;
-
+    private VehicleResponse vehicle;
 }

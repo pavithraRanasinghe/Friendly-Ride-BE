@@ -1,7 +1,10 @@
 package com.esoft.friendlyride.services;
 
 import com.esoft.friendlyride.dto.request.DriverRequest;
+import com.esoft.friendlyride.dto.request.VehicleDetailRequest;
+import com.esoft.friendlyride.exceptions.EntityNotFoundException;
 import com.esoft.friendlyride.models.Driver;
+import com.esoft.friendlyride.models.Vehicle;
 import com.esoft.friendlyride.repository.DriverRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,21 +21,28 @@ import java.util.List;
 public class DriverService {
 
     private final DriverRepository driverRepository;
-    private final GeometryFactory geometryFactory = new GeometryFactory();
 
     public Driver saveDriver(DriverRequest driverRequest) {
 
-        Coordinate coordinate = new Coordinate(driverRequest.getLongitude(), driverRequest.getLatitude());
-        Point point = geometryFactory.createPoint(coordinate);
-        point.setSRID(4326);
-
         Driver driver = Driver.builder()
-                .name(driverRequest.getName())
-                .location(point)
+                .firstName(driverRequest.getFirstName())
+                .lastName(driverRequest.getLastName())
+                .email(driverRequest.getEmail())
+                .nic(driverRequest.getNic())
+                .contact(driverRequest.getNic())
                 .build();
 
         return driverRepository.save(driver);
     }
+
+    public Driver findById(final Long id){
+        return driverRepository.findById(id).orElseThrow(()-> new EntityNotFoundException(id));
+    }
+
+//    public Vehicle updateVehicleDetails(VehicleDetailRequest vehicleDetailRequest){
+//        final Driver driver = findById(vehicleDetailRequest.getDriverId());
+//
+//    }
 
     public List<Driver> findNearbyDrivers(double longitude, double latitude, double distance) {
         return driverRepository.findDriversNearby(longitude, latitude, distance);

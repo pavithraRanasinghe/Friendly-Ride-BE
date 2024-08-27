@@ -38,6 +38,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("v1/app-user/**").permitAll()
                         .requestMatchers("v1/driver/**").permitAll()
+                        .requestMatchers("v1/route/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(
