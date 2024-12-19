@@ -7,6 +7,7 @@ import com.esoft.friendlyride.models.AppUser;
 import com.esoft.friendlyride.security.JwtTokenUtil;
 import com.esoft.friendlyride.security.JwtUserDetailsService;
 import com.esoft.friendlyride.services.AppUserService;
+import com.esoft.friendlyride.services.DriverService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,6 @@ public class AppUserController {
 
     private final AppUserService appUserService;
     private final JwtUserDetailsService userDetailsService;
-
     private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
@@ -44,9 +44,10 @@ public class AppUserController {
      * @return {@link ResponseEntity<AppUser>} Http response with the newly created app user
      */
     @PostMapping
-    public ResponseEntity<AppUser> register(@RequestBody final AppUserRequest appUserRequest){
+    public ResponseEntity<JwtResponse> register(@RequestBody final AppUserRequest appUserRequest){
         AppUser appUser = appUserService.signUp(appUserRequest);
-        return new ResponseEntity<>(appUser, HttpStatus.CREATED);
+        final Long userId = appUserService.findRelatedUserId(appUser.getUsername(), appUser.getUserType());
+        return new ResponseEntity<>(new JwtResponse(appUser, "token", userId), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
@@ -54,6 +55,7 @@ public class AppUserController {
         AppUser existingUser = appUserService.authenticate(authRequest);
         final UserDetails userDetails = userDetailsService.loadUserByUsername(existingUser.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new JwtResponse(existingUser, token));
+        final Long userId = appUserService.findRelatedUserId(existingUser.getUsername(), existingUser.getUserType());
+        return ResponseEntity.ok(new JwtResponse(existingUser, token, userId));
     }
 }

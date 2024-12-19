@@ -64,8 +64,8 @@ public class RouteService {
                 searchRequest.getStartLatitude(),
                 distance,
                 searchRequest.getEndLongitude(),
-                searchRequest.getEndLatitude(),
-                searchRequest.getStartTime()
+                searchRequest.getEndLatitude()
+//                searchRequest.getStartTime()
         );
 
         if(!singleRideList.isEmpty()){

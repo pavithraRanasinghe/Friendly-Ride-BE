@@ -2,6 +2,9 @@ package com.esoft.friendlyride.services;
 
 import com.esoft.friendlyride.dto.request.AppUserRequest;
 import com.esoft.friendlyride.dto.request.AuthRequest;
+import com.esoft.friendlyride.dto.request.DriverRequest;
+import com.esoft.friendlyride.dto.request.PassengerRequest;
+import com.esoft.friendlyride.enums.UserType;
 import com.esoft.friendlyride.exceptions.EntityExistsException;
 import com.esoft.friendlyride.exceptions.EntityNotFoundException;
 import com.esoft.friendlyride.exceptions.UnAuthorizedException;
@@ -20,12 +23,18 @@ public class AppUserService {
 
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
+    private final DriverService driverService;
+    private final PassengerService passengerService;
 
     @Autowired
-    public AppUserService(AppUserRepository appUserRepository,
-                          final PasswordEncoder passwordEncoder) {
+    public AppUserService(final AppUserRepository appUserRepository,
+                          final PasswordEncoder passwordEncoder,
+                          final DriverService driverService,
+                          final PassengerService passengerService) {
         this.appUserRepository = appUserRepository;
         this.passwordEncoder = passwordEncoder;
+        this.driverService = driverService;
+        this.passengerService = passengerService;
     }
 
     /**
@@ -48,7 +57,27 @@ public class AppUserService {
                 .password(passwordEncoder.encode(userRequest.getPassword()))
                 .build();
 
-        return appUserRepository.save(appUser);
+        AppUser user = appUserRepository.save(appUser);
+
+        if(user.getUserType().equals(UserType.DRIVER)){
+            driverService.saveDriver(DriverRequest.builder()
+                    .firstName(user.getFirstName())
+                            .lastName(user.getLastName())
+                            .nic("123")
+                            .email(user.getUsername())
+                            .contact(userRequest.getContact())
+                    .build());
+        } else if(user.getUserType().equals(UserType.PASSENGER)){
+            passengerService.savePassenger(PassengerRequest.builder()
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .nic("123")
+                    .email(user.getUsername())
+                    .contact(userRequest.getContact())
+                    .build());
+        }
+
+        return user;
     }
 
     public AppUser findByUsername(final String username){
@@ -64,5 +93,14 @@ public class AppUserService {
         }else {
             throw new UnAuthorizedException("Password doesn't match for user");
         }
+    }
+
+    public Long findRelatedUserId(final String username, final UserType userType){
+        if(userType.equals(UserType.DRIVER)){
+            return driverService.findByEmail(username).getId();
+        }else if(userType.equals(UserType.PASSENGER)){
+            return passengerService.findByEmail(username).getId();
+        }
+        return null;
     }
 }

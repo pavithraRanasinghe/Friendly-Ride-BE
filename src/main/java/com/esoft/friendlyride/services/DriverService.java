@@ -4,6 +4,7 @@ import com.esoft.friendlyride.dto.request.DriverRequest;
 import com.esoft.friendlyride.dto.request.VehicleDetailRequest;
 import com.esoft.friendlyride.exceptions.EntityNotFoundException;
 import com.esoft.friendlyride.models.Driver;
+import com.esoft.friendlyride.models.Passenger;
 import com.esoft.friendlyride.models.Vehicle;
 import com.esoft.friendlyride.repository.DriverRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,5 +47,10 @@ public class DriverService {
 
     public List<Driver> findNearbyDrivers(double longitude, double latitude, double distance) {
         return driverRepository.findDriversNearby(longitude, latitude, distance);
+    }
+
+
+    public Driver findByEmail(String email){
+        return driverRepository.findByEmail(email).orElseThrow(()-> new EntityNotFoundException(email));
     }
 }
