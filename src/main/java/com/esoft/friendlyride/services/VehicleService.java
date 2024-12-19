@@ -28,9 +28,11 @@ public class VehicleService {
                 .colour(vehicleRequest.getColour())
                 .name(vehicleRequest.getName())
                 .plateNumber(vehicleRequest.getPlateNumber())
-                .driver(driver)
                 .build();
 
-        vehicleRepository.save(vehicle);
+        Vehicle savedVehicle = vehicleRepository.save(vehicle);
+        driver.setVehicle(savedVehicle);
+
+        driverService.updateDriver(driver);
     }
 }

@@ -2,6 +2,7 @@ package com.esoft.friendlyride.controller;
 
 import com.esoft.friendlyride.dto.request.RouteRequest;
 import com.esoft.friendlyride.dto.request.SearchDriverRequest;
+import com.esoft.friendlyride.dto.request.TripRequest;
 import com.esoft.friendlyride.dto.response.MultipleRouteSearchResponse;
 import com.esoft.friendlyride.models.Driver;
 import com.esoft.friendlyride.models.Route;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
@@ -54,5 +56,11 @@ public class RouteController {
     @GetMapping("/{id}")
     public Route findById(@PathVariable Long id){
         return routeService.findById(id);
+    }
+
+    @PutMapping
+    public ResponseEntity<?> bookTrip(@RequestBody TripRequest tripRequest){
+        routeService.bookTrip(tripRequest);
+        return ResponseEntity.ok().build();
     }
 }

@@ -53,4 +53,8 @@ public class DriverService {
     public Driver findByEmail(String email){
         return driverRepository.findByEmail(email).orElseThrow(()-> new EntityNotFoundException(email));
     }
+
+    public void updateDriver(Driver driver){
+        driverRepository.save(driver);
+    }
 }

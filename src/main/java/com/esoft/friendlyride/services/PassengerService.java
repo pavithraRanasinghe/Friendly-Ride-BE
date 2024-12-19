@@ -33,4 +33,8 @@ public class PassengerService {
     public Passenger findByEmail(String email){
         return passengerRepository.findByEmail(email).orElseThrow(()-> new EntityNotFoundException(email));
     }
+
+    public Passenger findById(Long id){
+        return passengerRepository.findById(id).orElseThrow(()-> new EntityNotFoundException(id));
+    }
 }

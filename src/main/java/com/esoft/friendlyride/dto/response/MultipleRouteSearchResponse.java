@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalTime;
 
 @Data
@@ -21,7 +22,7 @@ public class MultipleRouteSearchResponse implements Serializable {
 
     private RouteSearchResponse firstRoute;
     private RouteSearchResponse secondRoute;
-
+    private BigDecimal price;
     @JsonDeserialize(using = LocalTimeDeserializer.class)
     @JsonSerialize(using = LocalTimeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING)

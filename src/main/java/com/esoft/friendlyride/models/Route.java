@@ -1,5 +1,6 @@
 package com.esoft.friendlyride.models;
 
+import com.esoft.friendlyride.enums.TripStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -63,6 +64,13 @@ public class Route implements Serializable {
 
     @Column(name = "max_passengers")
     private int maxPassengers;
+
+    @Column(name = "reserve_passengers")
+    private int reservePassengers;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private TripStatus status;
 
     @ToString.Exclude
     @ManyToOne(optional = false)
