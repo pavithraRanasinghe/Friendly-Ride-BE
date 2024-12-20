@@ -1,5 +1,6 @@
 package com.esoft.friendlyride.models;
 
+import com.esoft.friendlyride.enums.TripStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +17,7 @@ public class TripDetail implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
     @ToString.Exclude
@@ -27,5 +29,8 @@ public class TripDetail implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(name = "passenger_id", nullable = false)
     private Passenger passenger;
+
+    @Column(name = "status")
+    private TripStatus status;
 
 }

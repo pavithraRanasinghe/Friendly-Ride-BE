@@ -4,8 +4,10 @@ import com.esoft.friendlyride.dto.request.RouteRequest;
 import com.esoft.friendlyride.dto.request.SearchDriverRequest;
 import com.esoft.friendlyride.dto.request.TripRequest;
 import com.esoft.friendlyride.dto.response.MultipleRouteSearchResponse;
+import com.esoft.friendlyride.dto.response.TripDetailResponse;
 import com.esoft.friendlyride.models.Driver;
 import com.esoft.friendlyride.models.Route;
+import com.esoft.friendlyride.models.TripDetail;
 import com.esoft.friendlyride.services.RouteService;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -62,5 +64,10 @@ public class RouteController {
     public ResponseEntity<?> bookTrip(@RequestBody TripRequest tripRequest){
         routeService.bookTrip(tripRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/passenger/{id}")
+    public List<TripDetailResponse> findByPassenger(@PathVariable Long id){
+        return routeService.findByPassenger(id);
     }
 }

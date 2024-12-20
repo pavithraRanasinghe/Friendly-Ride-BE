@@ -3,10 +3,7 @@ package com.esoft.friendlyride.services;
 import com.esoft.friendlyride.dto.request.RouteRequest;
 import com.esoft.friendlyride.dto.request.SearchDriverRequest;
 import com.esoft.friendlyride.dto.request.TripRequest;
-import com.esoft.friendlyride.dto.response.DriverResponse;
-import com.esoft.friendlyride.dto.response.MultipleRouteSearchResponse;
-import com.esoft.friendlyride.dto.response.RouteSearchResponse;
-import com.esoft.friendlyride.dto.response.VehicleResponse;
+import com.esoft.friendlyride.dto.response.*;
 import com.esoft.friendlyride.enums.TripStatus;
 import com.esoft.friendlyride.exceptions.EntityNotFoundException;
 import com.esoft.friendlyride.models.Driver;
@@ -26,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -129,6 +127,10 @@ public class RouteService {
                 .startTime(route.getStartTime())
                 .expectedEndTime(route.getExpectedEndTime())
                 .maxPassengers(route.getMaxPassengers())
+                .startLatitude(route.getStartLocation().getX())
+                .startLongitude(route.getStartLocation().getY())
+                .endLatitude(route.getEndLocation().getX())
+                .endLongitude(route.getEndLocation().getY())
                 .driverResponse(DriverResponse.builder()
                         .id(route.getDriver().getId())
                         .firstName(route.getDriver().getFirstName())
@@ -195,8 +197,43 @@ public class RouteService {
             TripDetail tripDetail =  TripDetail.builder()
                     .route(route)
                     .passenger(passenger)
+                    .status(TripStatus.PENDING)
                     .build();
             tripDetailRepository.save(tripDetail);
         });
     }
+
+    public List<TripDetailResponse> findByPassenger(final Long passengerId) {
+        Passenger passenger = passengerService.findById(passengerId);
+        List<TripDetail> tripDetails = tripDetailRepository.findByPassenger(passenger);
+
+        return tripDetails.stream().map(tripDetail -> TripDetailResponse.builder()
+                        .passenger(tripDetail.getPassenger())
+                        .driverResponse(DriverResponse.builder()
+                                .id(tripDetail.getRoute().getDriver().getId())
+                                .firstName(tripDetail.getRoute().getDriver().getFirstName())
+                                .lastName(tripDetail.getRoute().getDriver().getLastName())
+                                .email(tripDetail.getRoute().getDriver().getEmail())
+                                .nic(tripDetail.getRoute().getDriver().getNic())
+                                .contact(tripDetail.getRoute().getDriver().getContact())
+                                .vehicle(VehicleResponse.builder()
+                                        .id(tripDetail.getRoute().getDriver().getVehicle().getId())
+                                        .name(tripDetail.getRoute().getDriver().getVehicle().getName())
+                                        .model(tripDetail.getRoute().getDriver().getVehicle().getModel())
+                                        .plateNumber(tripDetail.getRoute().getDriver().getVehicle().getPlateNumber())
+                                        .colour(tripDetail.getRoute().getDriver().getVehicle().getColour())
+                                        .build())
+                                .build())
+                        .routeId(tripDetail.getRoute().getId())
+                        .date(tripDetail.getRoute().getDate())
+                        .startTime(tripDetail.getRoute().getStartTime())
+                        .expectedEndTime(tripDetail.getRoute().getExpectedEndTime())
+                        .startLatitude(tripDetail.getRoute().getStartLocation().getY())
+                        .startLongitude(tripDetail.getRoute().getStartLocation().getX())
+                        .endLatitude(tripDetail.getRoute().getEndLocation().getY())
+                        .endLongitude(tripDetail.getRoute().getEndLocation().getX())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }
